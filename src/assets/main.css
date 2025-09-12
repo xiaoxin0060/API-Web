@@ -1,0 +1,387 @@
+/* 深色主题专用样式 - 覆盖Element Plus默认样式 */
+
+/* Element Plus 深色主题覆盖 */
+
+:deep(.el-button) {
+  transition: all 0.2s ease;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: none;
+}
+
+:deep(.el-button--primary) {
+  background: var(--color-button-primary);
+  color: var(--color-button-primary-text);
+  box-shadow: var(--color-shadow-sm);
+}
+
+:deep(.el-button--primary:hover) {
+  background: var(--color-button-primary-hover);
+  transform: translateY(-1px);
+}
+
+:deep(.el-button--primary:active) {
+  background: var(--color-button-primary-active);
+  transform: translateY(0);
+}
+
+:deep(.el-button--default) {
+  background: var(--color-button-secondary);
+  color: var(--color-button-secondary-text);
+  border: 1px solid var(--color-border);
+}
+
+:deep(.el-button--default:hover) {
+  background: var(--color-button-secondary-hover);
+  transform: translateY(-1px);
+}
+
+:deep(.el-button--danger) {
+  background: var(--color-button-destructive);
+  color: var(--color-button-destructive-text);
+}
+
+:deep(.el-button--danger:hover) {
+  background: var(--color-button-destructive-hover);
+}
+
+:deep(.el-button--success) {
+  background: var(--color-button-success);
+  color: var(--color-button-success-text);
+}
+
+:deep(.el-button--success:hover) {
+  background: var(--color-button-success-hover);
+}
+
+:deep(.el-button--warning) {
+  background: var(--color-button-warning);
+  color: var(--color-button-warning-text);
+}
+
+:deep(.el-button--warning:hover) {
+  background: var(--color-button-warning-hover);
+}
+
+:deep(.el-button--info) {
+  background: var(--color-button-info);
+  color: var(--color-button-info-text);
+}
+
+:deep(.el-button--info:hover) {
+  background: var(--color-button-info-hover);
+}
+
+:deep(.el-card) {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: var(--color-shadow-md);
+}
+
+:deep(.el-card:hover) {
+  transform: translateY(-2px);
+  box-shadow: var(--color-shadow-lg);
+  border-color: var(--color-border-strong);
+}
+
+:deep(.el-card__header) {
+  background: var(--color-bg-tertiary);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.5rem;
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+:deep(.el-card__body) {
+  padding: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+:deep(.el-table) {
+  background: var(--color-bg-secondary);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--color-shadow-md);
+}
+
+:deep(.el-table__header) {
+  background: var(--color-bg-tertiary);
+}
+
+:deep(.el-table__header th) {
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--color-table-border);
+}
+
+:deep(.el-table__row) {
+  transition: all 0.2s ease;
+  background: transparent;
+  border-bottom: 1px solid var(--color-table-border);
+}
+
+:deep(.el-table__row:hover) {
+  background: var(--color-row-hover);
+}
+
+:deep(.el-table__row.selected) {
+  background: var(--color-row-selected);
+}
+
+:deep(.el-table__cell) {
+  padding: 0.75rem 1rem;
+  border-bottom: none;
+  color: var(--color-text-primary);
+}
+
+:deep(.el-input__wrapper) {
+  transition: all 0.2s ease;
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-input-border);
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+:deep(.el-input__wrapper:focus-within) {
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+  background: var(--color-input-bg);
+}
+
+:deep(.el-input__inner) {
+  color: var(--color-input-text);
+  font-weight: 400;
+}
+
+:deep(.el-input__inner::placeholder) {
+  color: var(--color-input-placeholder);
+  font-weight: 400;
+}
+
+:deep(.el-input.is-disabled .el-input__wrapper) {
+  opacity: 0.4;
+}
+
+/* 删除旧的滚动条样式，使用theme.css中的样式 */
+
+/* 加载动画 */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.loading-pulse {
+  animation: pulse 2s infinite;
+}
+
+:deep(.el-tag) {
+  background: var(--color-badge-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-badge-text);
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 0.8125rem;
+}
+
+:deep(.el-tag:hover) {
+  transform: scale(1.05);
+}
+
+:deep(.el-tag--success) {
+  background: rgba(134, 239, 172, 0.15);
+  border-color: rgba(134, 239, 172, 0.3);
+  color: var(--color-success);
+}
+
+:deep(.el-tag--warning) {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: var(--color-warning);
+}
+
+:deep(.el-tag--danger) {
+  background: rgba(248, 113, 113, 0.15);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: var(--color-error);
+}
+
+:deep(.el-tag--info) {
+  background: rgba(147, 197, 253, 0.15);
+  border-color: rgba(147, 197, 253, 0.3);
+  color: var(--color-info);
+}
+
+/* 更多Element Plus组件深色主题覆盖 */
+:deep(.el-switch .el-switch__core) {
+  background: rgba(156, 163, 175, 0.3);
+  border: none;
+  transition: all 0.2s ease;
+}
+
+:deep(.el-switch.is-checked .el-switch__core) {
+  background: var(--color-accent-blue);
+}
+
+:deep(.el-pagination) {
+  background: var(--color-bg-secondary);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+}
+
+:deep(.el-pagination button) {
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+}
+
+:deep(.el-pagination button:hover) {
+  background: rgba(96, 165, 250, 0.1);
+  border-color: var(--color-accent-blue);
+  color: var(--color-accent-blue);
+}
+
+:deep(.el-pagination button.is-active) {
+  background: var(--color-accent-blue);
+  color: white;
+  border-color: var(--color-accent-blue);
+}
+
+:deep(.el-message) {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  box-shadow: var(--color-shadow-lg);
+  border-radius: 0.5rem;
+}
+
+:deep(.el-dropdown-menu) {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--color-shadow-lg);
+  border-radius: 0.5rem;
+}
+
+:deep(.el-dropdown-menu__item) {
+  color: var(--color-text-primary);
+  transition: all 0.2s ease;
+}
+
+:deep(.el-dropdown-menu__item:hover) {
+  background: var(--color-row-hover);
+  color: var(--color-accent-blue);
+}
+
+:deep(.el-menu--horizontal) {
+  border-bottom: none;
+  background: transparent;
+}
+
+:deep(.el-menu--horizontal .el-menu-item) {
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-primary);
+}
+
+:deep(.el-menu--horizontal .el-menu-item.is-active) {
+  border-bottom-color: var(--color-accent-blue);
+  color: var(--color-accent-blue);
+}
+
+:deep(.el-menu--horizontal .el-menu-item:hover) {
+  color: var(--color-accent-blue);
+}
+
+/* 高级骨架屏加载动画 */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton-loading {
+  background: linear-gradient(90deg, var(--surface-muted) 25%, var(--border-color) 50%, var(--surface-muted) 75%);
+  background-size: 200px 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* 页面切换高级动画 */
+.page-enter-active {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  filter: blur(4px);
+}
+
+.page-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(1.02);
+}
+
+/* 高级加载指示器 */
+@keyframes elegant-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.elegant-loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(99, 102, 241, 0.2);
+  border-top: 2px solid #6366f1;
+  border-radius: 50%;
+  animation: elegant-spin 1s linear infinite;
+}
+
+/* 修复输入框清除按钮抖动问题 - 让清除按钮始终占据空间 */
+:deep(.el-input__clear) {
+  /* 始终显示但透明，避免布局变化 */
+  visibility: visible !important;
+  opacity: 0 !important;
+  transition: opacity 0.2s ease !important;
+  /* 确保占据固定空间 */
+  width: 16px !important;
+  height: 16px !important;
+  margin-left: 5px !important;
+}
+
+/* 悬停时显示清除按钮 */
+:deep(.el-input:hover .el-input__clear),
+:deep(.el-input__wrapper:hover .el-input__clear) {
+  opacity: 0.6 !important;
+}
+
+/* 悬停清除按钮本身时完全显示 */
+:deep(.el-input__clear:hover) {
+  opacity: 1 !important;
+}
+
+/* 输入框有内容时也显示清除按钮 */
+:deep(.el-input.is-focus .el-input__clear) {
+  opacity: 0.6 !important;
+}
+
+/* 确保输入框右侧padding足够 */
+:deep(.el-input--suffix .el-input__inner) {
+  padding-right: 30px !important;
+}

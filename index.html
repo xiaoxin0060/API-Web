@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="小新API平台 - 企业级接口管理与调试平台">
+    <meta name="keywords" content="API, 接口, 文档, 调试, 管理">
+    <meta name="author" content="小新API平台">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Security headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
+    <!-- PWA meta -->
+    <meta name="theme-color" content="#6366f1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="小新API平台">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/pwa-192x192.png">
+    
+    <!-- Preconnect to improve performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <title>小新API平台</title>
+    
+    <!-- Critical CSS inline (if needed) -->
+    <style>
+      /* 防止FOUC (Flash of Unstyled Content) */
+      #app {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
+      
+      #app.loaded {
+        opacity: 1;
+      }
+      
+      /* 初始loading样式 */
+      .initial-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 1;
+        transition: opacity 0.5s ease-out;
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 初始加载指示器 -->
+    <div id="initial-loading" class="initial-loading">
+      <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- 应用根节点 -->
+    <div id="app"></div>
+    
+    <!-- 主应用脚本 -->
+    <script type="module" src="/src/main.ts"></script>
+    
+    <!-- 移除初始加载指示器 -->
+    <script>
+      window.addEventListener('load', function() {
+        const loading = document.getElementById('initial-loading');
+        const app = document.getElementById('app');
+        
+        setTimeout(() => {
+          loading.style.opacity = '0';
+          app.classList.add('loaded');
+          setTimeout(() => {
+            loading.style.display = 'none';
+          }, 500);
+        }, 500);
+      });
+    </script>
+  </body>
+</html>
