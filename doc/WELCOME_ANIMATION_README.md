@@ -266,6 +266,21 @@ animateNumber(您的数值, 动画时长, callback)
 3. **访问演示页面**：
    访问 `http://localhost:3000/welcome` 并点击"重置首次访问状态"
 
+### Q: 为什么登录后刷新页面，欢迎动画一直显示在主页面上？
+
+**A: 这是v1.1.0之前版本的已知bug，现已修复。**
+
+**问题原因：**
+- `App.vue`中的`showWelcome`总是初始化为`true`
+- 非首次访问显示简单loading，但没有自动完成机制
+- 导致欢迎动画组件无法正确隐藏
+
+**修复内容：**
+- ✅ `showWelcome`现在初始化为`false`
+- ✅ 添加`initWelcomeState()`智能检查localStorage
+- ✅ 只有真正首次访问才显示欢迎动画
+- ✅ 登录用户刷新页面不再显示多余动画
+
 ### Q: 如何在不同场景使用不同的首次访问标记？
 
 **A: 使用 `storage-key` 属性：**

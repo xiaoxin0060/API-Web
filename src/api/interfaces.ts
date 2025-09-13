@@ -3,7 +3,6 @@ import type {
   InterfaceInfo,
   InterfaceInfoAddRequest,
   InterfaceInfoUpdateRequest,
-  InterfaceInfoInvokeRequest,
   PageData,
   PaginationRequest,
   BaseResponse

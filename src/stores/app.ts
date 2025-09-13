@@ -82,7 +82,8 @@ export const useAppStore = defineStore('app', () => {
   }
 }, {
   persist: {
-    paths: ['config.locale', 'sidebarCollapsed'],
+    key: 'app-store',
     storage: localStorage,
+    pick: ['config.locale', 'sidebarCollapsed'],
   }
 })

@@ -9,7 +9,7 @@
       </div>
       
       <div class="error-content">
-        <h1 class="error-title">{{ $t('error.forbidden') }}</h1>
+        <h1 class="error-title">访问被禁止</h1>
         <p class="error-description">
           抱歉，您没有权限访问该页面。请联系管理员获取相应权限，或者返回到有权限的页面。
         </p>
@@ -87,9 +87,14 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
 import { ref, onMounted } from 'vue'
+// @ts-ignore
 import { useRouter } from 'vue-router'
+// @ts-ignore
 import { ElMessage } from 'element-plus'
+// @ts-ignore
+import { Lock, ArrowLeft, House, Message } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -221,14 +226,14 @@ onMounted(() => {
 
 .error-title {
   font-size: 28px;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
   margin-bottom: 15px;
   font-weight: 600;
 }
 
 .error-description {
   font-size: 16px;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   line-height: 1.6;
   margin-bottom: 30px;
 }

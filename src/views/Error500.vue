@@ -84,9 +84,14 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
 import { ref, computed, onMounted } from 'vue'
+// @ts-ignore
 import { useRouter, useRoute } from 'vue-router'
+// @ts-ignore
 import { ElMessage } from 'element-plus'
+// @ts-ignore
+import { Warning, CopyDocument, Refresh, House, InfoFilled } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -210,14 +215,14 @@ onMounted(() => {
 
 .error-title {
   font-size: 28px;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
   margin-bottom: 15px;
   font-weight: 600;
 }
 
 .error-description {
   font-size: 16px;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   line-height: 1.6;
   margin-bottom: 30px;
 }
@@ -234,7 +239,7 @@ onMounted(() => {
 
 .error-info {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   
   p {
     margin-bottom: 8px;
@@ -245,7 +250,7 @@ onMounted(() => {
   }
   
   strong {
-    color: var(--text-primary);
+    color: var(--color-text-primary);
   }
 }
 

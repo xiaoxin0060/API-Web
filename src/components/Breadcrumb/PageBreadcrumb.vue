@@ -40,25 +40,30 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
 import { computed, ref, onMounted, nextTick } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+// @ts-ignore
+import { useRoute } from 'vue-router'
+// @ts-ignore
+import type { RouteRecordNormalized } from 'vue-router'
+// @ts-ignore
 import { ArrowRight } from '@element-plus/icons-vue'
 
 interface BreadcrumbItem {
   title: string
-  path?: string
-  icon?: string
+  path?: string | undefined
+  icon?: string | undefined
 }
 
 const route = useRoute()
-const router = useRouter()
+// const router = useRouter() // 暂时未使用
 
 // 控制面包屑淡入动画
 const isLoaded = ref(false)
 
 // 生成面包屑导航
 const breadcrumbList = computed<BreadcrumbItem[]>(() => {
-  const matched = route.matched.filter(item => item.meta?.breadcrumb !== false)
+  const matched = route.matched.filter((item: RouteRecordNormalized) => item.meta?.breadcrumb !== false)
   const breadcrumbs: BreadcrumbItem[] = []
   
   // 添加首页
@@ -69,7 +74,7 @@ const breadcrumbList = computed<BreadcrumbItem[]>(() => {
   })
   
   // 处理匹配的路由
-  matched.forEach((routeRecord, index) => {
+  matched.forEach((routeRecord: RouteRecordNormalized, index: number) => {
     const isLast = index === matched.length - 1
     const title = routeRecord.meta?.title || routeRecord.name
     

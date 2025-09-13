@@ -313,6 +313,31 @@ onMounted(() => {
   line-height: 1.5;
 }
 
+/* 修复密码输入框叉号抖动问题 - 预留清除按钮空间 */
+.login-form-container :deep(.el-input--password .el-input__wrapper) {
+  padding-right: 55px !important; /* 为眼睛图标和叉号预留空间 */
+}
+
+.login-form-container :deep(.el-input--password .el-input__suffix) {
+  width: 50px !important; /* 固定后缀区域宽度 */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
+
+.login-form-container :deep(.el-input--password .el-input__clear) {
+  margin-right: 4px !important; /* 叉号与眼睛图标的间距 */
+}
+
+/* 普通输入框也预留清除按钮空间 */
+.login-form-container :deep(.el-input:not(.el-input--password) .el-input__wrapper) {
+  padding-right: 35px !important; /* 为叉号预留空间 */
+}
+
+.login-form-container :deep(.el-input:not(.el-input--password) .el-input__suffix) {
+  width: 30px !important;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .login-card {

@@ -48,9 +48,8 @@ defineEmits(['brand-click'])
   align-items: center;
   justify-content: space-between;
   height: 100%;
-  padding: 0 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 0 1rem 0 0; /* 完全贴边，去掉左边距 */
+  width: 100%; /* 完全撑满宽度 */
 }
 
 .header-left {
@@ -64,8 +63,9 @@ defineEmits(['brand-click'])
   gap: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1rem 0.5rem 0.5rem; /* logo贴到最左边 */
   border-radius: 0.75rem;
+  margin-left: 0.5rem; /* 给左边留一点点边距，避免完全贴边 */
 }
 
 .brand:hover {
@@ -102,11 +102,12 @@ defineEmits(['brand-click'])
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-right: 0.5rem; /* 确保用户头像贴到最右边 */
 }
 
 @media (max-width: 768px) {
   .header-container {
-    padding: 0 1rem;
+    padding: 0; /* 移动端完全无边距 */
   }
   
   .header-nav {
@@ -115,6 +116,15 @@ defineEmits(['brand-click'])
   
   .brand-text {
     display: none;
+  }
+  
+  .brand {
+    padding: 0.5rem;
+    margin-left: 0.25rem; /* 移动端更小的左边距 */
+  }
+  
+  .header-right {
+    margin-right: 0.25rem; /* 移动端用户头像也贴右边 */
   }
 }
 </style>

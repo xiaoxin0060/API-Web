@@ -100,7 +100,7 @@
           </div>
         </button>
         
-        <div class="hint-text">点击体验炫酷动画效果</div>
+        <div class="hint-text">点击体验产品</div>
       </div>
     </div>
     

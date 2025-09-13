@@ -203,7 +203,7 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(_to, _from, savedPosition) {
     // 验收标准：页面切换时的滚动行为
     if (savedPosition) {
       return savedPosition
@@ -214,7 +214,7 @@ const router = createRouter({
 })
 
 // 全局前置守卫
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const auth = useAuthStore()
   const app = useAppStore()
   
@@ -285,7 +285,7 @@ router.beforeEach(async (to, from, next) => {
 })
 
 // 全局后置守卫
-router.afterEach((to, from, failure) => {
+router.afterEach((to, _from, failure) => {
   const app = useAppStore()
   
   // 结束加载进度条
@@ -312,7 +312,7 @@ router.afterEach((to, from, failure) => {
 })
 
 // 监听401未授权事件（来自API拦截器）
-window.addEventListener('auth:unauthorized', (event: Event) => {
+window.addEventListener('auth:unauthorized', (_event: Event) => {
   const auth = useAuthStore()
   const currentRoute = router.currentRoute.value
   

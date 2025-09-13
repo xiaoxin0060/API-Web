@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 import type { BaseResponse } from '@/types/api'
 
 // 生成唯一请求ID
@@ -20,17 +20,14 @@ const apiClient: AxiosInstance = axios.create({
 
 // 请求拦截器
 apiClient.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     // 添加请求ID用于追踪
-    config.headers = {
-      ...config.headers,
-      'X-Request-Id': generateRequestId(),
-    }
+    config.headers.set('X-Request-Id', generateRequestId())
     
     // 添加CSRF Token (如果需要)
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
     if (csrfToken) {
-      config.headers['X-CSRF-TOKEN'] = csrfToken
+      config.headers.set('X-CSRF-TOKEN', csrfToken)
     }
     
     return config

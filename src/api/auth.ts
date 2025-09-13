@@ -1,8 +1,6 @@
 import { api } from './client'
 import type { 
   User, 
-  UserLoginRequest, 
-  UserRegisterRequest, 
   BaseResponse 
 } from '@/types/api'
 

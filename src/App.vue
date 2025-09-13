@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import WelcomeAnimation from '@/components/Welcome/WelcomeAnimation.vue'
@@ -19,8 +19,16 @@ const auth = useAuthStore()
 const isAuthPage = computed(() => ['/login', '/register'].includes(route.path))
 const isAdmin = computed(() => auth.isAdmin)
 
-// 控制欢迎动画显示
-const showWelcome = ref(true)
+// 控制欢迎动画显示 - 初始化时检查是否需要显示
+const showWelcome = ref(false)
+
+// 初始化欢迎动画状态
+const initWelcomeState = () => {
+  const hasVisited = localStorage.getItem('appColdStart')
+  if (!hasVisited) {
+    showWelcome.value = true
+  }
+}
 
 // 处理欢迎动画完成
 function handleWelcomeComplete() {
@@ -74,6 +82,11 @@ const navItems = [
 if (isAdmin.value) {
   navItems.push({ path: '/admin/users', title: '用户管理', icon: 'User' })
 }
+
+// 组件挂载时初始化欢迎动画状态
+onMounted(() => {
+  initWelcomeState()
+})
 </script>
 
 <template>

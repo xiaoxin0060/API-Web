@@ -3,12 +3,6 @@ import { ref, computed } from 'vue'
 import type { User } from '@/types/api'
 import { login as apiLogin, logout as apiLogout, getLoginUser } from '@/api/auth'
 
-interface AuthState {
-  user: User | null
-  loading: boolean
-  error: string | null
-}
-
 export const useAuthStore = defineStore('auth', () => {
   // 状态
   const user = ref<User | null>(null)
@@ -112,9 +106,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 }, {
   persist: {
-    // 仅持久化基本用户信息，敏感信息依赖服务端Session
-    paths: ['user.id', 'user.userName', 'user.userAccount', 'user.userRole'],
+    key: 'auth-store',
     storage: sessionStorage, // 使用sessionStorage提高安全性
+    // 仅持久化基本用户信息，敏感信息依赖服务端Session
+    pick: ['user.id', 'user.userName', 'user.userAccount', 'user.userRole'],
   }
 })
 
