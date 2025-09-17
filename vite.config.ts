@@ -6,11 +6,13 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const isDev = command === 'serve' || mode === 'development'
+  const proxyTarget = env.VITE_PROXY_TARGET || 'http://localhost:8101'
   
   return {
     plugins: [
       vue(),
-      vueDevTools(),
+      ...(isDev ? [vueDevTools()] : []),
     ],
     resolve: {
       alias: {
@@ -22,7 +24,7 @@ export default defineConfig(({ command, mode }) => {
       port: 3000,
       proxy: {
         '/api': {
-          target: 'http://localhost:8101',
+          target: proxyTarget,
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path,
@@ -41,13 +43,18 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     build: {
-      target: 'esnext',
+      target: 'es2019',
       rollupOptions: {
         output: {
-          manualChunks: {
-            'element-plus': ['element-plus'],
-            'vue-vendor': ['vue', 'vue-router', 'pinia'],
-            'utils': ['axios', 'dayjs', '@vueuse/core']
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (/vue|element-plus|@element-plus|vue-router|pinia/.test(id)) {
+                return 'vendor'
+              }
+              if (/axios|dayjs|@vueuse/.test(id)) {
+                return 'utils'
+              }
+            }
           }
         }
       }

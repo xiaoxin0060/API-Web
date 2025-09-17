@@ -15,7 +15,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "strict": true,
     "exactOptionalPropertyTypes": false,
     "noUnusedLocals": false,
@@ -24,5 +25,6 @@
     "noImplicitReturns": true,
     "skipLibCheck": true,
     "noImplicitAny": false
-  }
+  },
+  
 }
