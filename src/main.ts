@@ -17,6 +17,9 @@ import router from '@/router'
 import i18n from '@/i18n'
 import { performanceDetector } from '@/utils/performanceDetector'
 
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+
+
 const app = createApp(App)
 
 // 创建Pinia实例
@@ -46,7 +49,9 @@ app.use(pinia)
 app.use(VueQueryPlugin, vueQueryOptions)
 app.use(router)
 app.use(i18n)
-app.use(ElementPlus)
+app.use(ElementPlus, {
+  locale: zhCn,
+})
 
 // 注册所有 Element Plus 图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
