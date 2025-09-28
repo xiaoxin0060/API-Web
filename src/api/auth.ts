@@ -65,4 +65,18 @@ export async function getMaskedAkSk(
   })
 }
 
+/**
+ * 更新用户个人信息
+ */
+export async function updateProfile(
+  data: {
+    id?: number
+    userName?: string
+    userAvatar?: string
+    gender?: number
+  }
+): Promise<BaseResponse<boolean>> {
+  return api.post<boolean>('/user/update', data)
+}
+
 

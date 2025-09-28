@@ -74,14 +74,23 @@ function handleNotificationClick() {
   }, 600)
 }
 
-const navItems = [
-  { path: '/interfaces', title: '接口文档', icon: 'Document' },
-  { path: '/posts', title: '社区帖子', icon: 'ChatLineSquare' }
-]
-
-if (isAdmin.value) {
-  navItems.push({ path: '/admin/users', title: '用户管理', icon: 'User' })
-}
+const navItems = computed(() => {
+  const items = [
+    { path: '/interfaces', title: '接口文档', icon: 'Document' }
+  ]
+  
+  // 仅在特性开关启用时显示帖子模块
+  if (auth.canAccessPosts) {
+    items.push({ path: '/posts', title: '社区帖子', icon: 'ChatLineSquare' })
+  }
+  
+  // 管理员菜单
+  if (auth.canManageUsers) {
+    items.push({ path: '/admin/users', title: '用户管理', icon: 'User' })
+  }
+  
+  return items
+})
 
 // 组件挂载时初始化欢迎动画状态
 onMounted(() => {

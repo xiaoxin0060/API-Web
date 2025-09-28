@@ -9,6 +9,13 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
   
+  // 特性开关配置
+  const FEATURE_FLAGS = {
+    enablePosts: false,           // 暂时下线帖子模块
+    enableUserManagement: true,   // 用户管理功能
+    enableInterfaceManagement: true // 接口管理功能
+  }
+  
   // 计算属性
   const isLoggedIn = computed(() => !!user.value)
   const isAdmin = computed(() => {
@@ -16,6 +23,12 @@ export const useAuthStore = defineStore('auth', () => {
     return typeof role === 'string' && role.trim().toLowerCase() === 'admin'
   })
   const userName = computed(() => user.value?.userName || user.value?.userAccount || '')
+  
+  // 权限计算
+  const canManageUsers = computed(() => isAdmin.value && FEATURE_FLAGS.enableUserManagement)
+  const canManageInterfaces = computed(() => isAdmin.value && FEATURE_FLAGS.enableInterfaceManagement)
+  const canAccessPosts = computed(() => FEATURE_FLAGS.enablePosts)
+  const canResetAkSk = computed(() => isAdmin.value) // 仅管理员可重置AK/SK
   
   // 清除错误
   const clearError = () => {
@@ -28,14 +41,23 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
     
     try {
+      console.log('[AUTH] 开始hydrate，调用getLoginUser API...')
       const resp = await getLoginUser()
+      console.log('[AUTH] getLoginUser响应:', resp)
+      
       if (resp?.code === 0) {
         user.value = resp.data
+        console.log('[AUTH] 用户信息加载成功:', resp.data)
+        console.log('[AUTH] user.value 更新后:', user.value)
+        console.log('[AUTH] 用户角色:', resp.data?.userRole)
       } else {
         user.value = null
+        console.warn('[AUTH] getLoginUser失败，返回码:', resp?.code, '消息:', resp?.message)
       }
     } catch (e: any) {
       user.value = null
+      console.error('[AUTH] hydrate异常:', e)
+      console.error('[AUTH] API错误详情:', e?.response?.data)
       // 不在hydrate时显示错误，静默失败
       console.warn('Failed to restore auth state:', e)
     } finally {
@@ -96,6 +118,15 @@ export const useAuthStore = defineStore('auth', () => {
     isLoggedIn,
     isAdmin,
     userName,
+    
+    // 权限计算
+    canManageUsers,
+    canManageInterfaces,
+    canAccessPosts,
+    canResetAkSk,
+    
+    // 特性开关
+    FEATURE_FLAGS,
     
     // 操作
     hydrate,

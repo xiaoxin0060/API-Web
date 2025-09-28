@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { getMaskedAkSk, resetAkSk } from '@/api/auth'
+import { getMaskedAkSk, resetAkSk, updateProfile } from '@/api/auth'
 import { pageUserInterfaceInfo } from '@/api/userInterfaceInfo'
 import WelcomeAnimation from '@/components/Welcome/WelcomeAnimation.vue'
 import dayjs from 'dayjs'
@@ -14,6 +14,15 @@ const showSuccessAnimation = ref(false)
 const quotaLoading = ref(false)
 const quotas = ref([])
 const prevLeft = ref({})
+
+// 个人信息编辑相关状态
+const editMode = ref(false)
+const profileForm = ref({
+  userName: '',
+  userAvatar: '', 
+  gender: 0
+})
+const profileLoading = ref(false)
 
 async function loadMasked() {
   if (!auth.user) return
@@ -86,6 +95,49 @@ async function loadQuotas() {
 
 function refreshQuotas() { loadQuotas() }
 
+// 个人信息编辑功能
+function startEdit() {
+  if (!auth.user) return
+  profileForm.value = {
+    userName: auth.user.userName || '',
+    userAvatar: auth.user.userAvatar || '',
+    gender: auth.user.gender || 0
+  }
+  editMode.value = true
+}
+
+function cancelEdit() {
+  editMode.value = false
+  profileForm.value = { userName: '', userAvatar: '', gender: 0 }
+}
+
+async function saveProfile() {
+  if (!auth.user) return
+  profileLoading.value = true
+  try {
+    // 添加用户ID到请求数据
+    const updateData = {
+      id: auth.user.id,
+      ...profileForm.value
+    }
+    
+    const resp = await updateProfile(updateData)
+    if (resp?.code === 0) {
+      // 更新本地用户信息
+      auth.updateUser(profileForm.value)
+      editMode.value = false
+      triggerSuccessAnimation()
+      alert('个人信息更新成功！')
+    } else {
+      alert(resp?.message || '更新失败')
+    }
+  } catch (e) {
+    alert(e?.response?.data?.message || e.message || '更新失败')
+  } finally {
+    profileLoading.value = false
+  }
+}
+
 </script>
 
 <template>
@@ -99,12 +151,50 @@ function refreshQuotas() { loadQuotas() }
         <p>未登录，请先 <router-link to="/login">登录</router-link></p>
       </div>
       <div v-else>
-        <p>用户：{{ auth.user.userName || auth.user.userAccount }}</p>
-        <div class="keys">
-          <div><b>AccessKey</b>：{{ masked?.accessKey || '-' }}</div>
-          <div><b>SecretKey</b>：{{ masked?.secretKey || '-' }}</div>
+        <!-- 查看模式 -->
+        <div v-if="!editMode">
+          <div class="user-info">
+            <p><strong>用户名：</strong>{{ auth.user.userName || auth.user.userAccount }}</p>
+            <p><strong>账号：</strong>{{ auth.user.userAccount }}</p>
+            <p><strong>性别：</strong>{{ auth.user.gender === 1 ? '男' : auth.user.gender === 2 ? '女' : '未设置' }}</p>
+            <p><strong>角色：</strong>{{ auth.user.userRole === 'admin' ? '管理员' : '普通用户' }}</p>
+          </div>
+          <div class="action-buttons">
+            <el-button type="primary" @click="startEdit">编辑资料</el-button>
+          </div>
         </div>
-        <el-button @click="onReset">管理员重置 AK/SK</el-button>
+        
+        <!-- 编辑模式 -->
+        <el-form v-else v-loading="profileLoading" :model="profileForm" label-width="80px">
+          <el-form-item label="用户名">
+            <el-input v-model="profileForm.userName" placeholder="请输入用户名" />
+          </el-form-item>
+          <el-form-item label="头像">
+            <el-input v-model="profileForm.userAvatar" placeholder="请输入头像URL" />
+          </el-form-item>
+          <el-form-item label="性别">
+            <el-radio-group v-model="profileForm.gender">
+              <el-radio :label="0">未设置</el-radio>
+              <el-radio :label="1">男</el-radio>
+              <el-radio :label="2">女</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="saveProfile" :loading="profileLoading">保存</el-button>
+            <el-button @click="cancelEdit">取消</el-button>
+          </el-form-item>
+        </el-form>
+        
+        <!-- AK/SK 区域 -->
+        <div class="keys-section">
+          <h3>密钥信息</h3>
+          <div class="keys">
+            <div><b>AccessKey</b>：{{ masked?.accessKey || '-' }}</div>
+            <div><b>SecretKey</b>：{{ masked?.secretKey || '-' }}</div>
+          </div>
+          <el-button v-if="auth.canResetAkSk" @click="onReset">重置 AK/SK</el-button>
+        </div>
+        
         <p v-if="msg" class="error-message">{{ msg }}</p>
       </div>
     </el-card>
@@ -152,6 +242,34 @@ function refreshQuotas() { loadQuotas() }
 .profile-card {
   border: 1px solid var(--color-border);
   border-radius: 1rem;
+}
+
+.user-info {
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.user-info p {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.action-buttons {
+  margin: 16px 0;
+}
+
+.keys-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.keys-section h3 {
+  margin-bottom: 12px;
+  color: var(--color-text-primary);
 }
 
 .keys { 

@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { pageUsers, deleteUser } from '@/api/users'
+import { resetAkSk } from '@/api/auth'
 import { User, Search, Refresh, Delete } from '@element-plus/icons-vue'
 import TableSkeleton from '@/components/Skeleton/TableSkeleton.vue'
 import EmptyState from '@/components/Empty/EmptyState.vue'
@@ -76,6 +77,27 @@ async function handleBulkDelete() {
   } catch (e) { if (e !== 'cancel') ElMessage.error('批量删除失败') }
 }
 
+async function onResetAkSk(row) {
+  try {
+    await ElMessageBox.confirm(`确认重置用户"${row.userName || row.userAccount}"的 AK/SK 密钥？`, '重置确认', { 
+      type: 'warning',
+      confirmButtonText: '确认重置',
+      cancelButtonText: '取消'
+    })
+    
+    const resp = await resetAkSk(row.id)
+    if (resp?.code === 0) {
+      ElMessage.success('密钥重置成功，请通知用户重新获取')
+    } else {
+      ElMessage.error(resp?.message || '重置失败')
+    }
+  } catch (e) { 
+    if (e !== 'cancel') {
+      ElMessage.error(e?.response?.data?.message || '重置失败')
+    }
+  }
+}
+
 onMounted(() => { syncFromRoute(); fetchData() })
 </script>
 
@@ -140,8 +162,9 @@ onMounted(() => { syncFromRoute(); fetchData() })
         <el-table-column prop="createTime" label="创建时间" width="180" sortable="custom">
           <template #default="{ row }">{{ row.createTime ? dayjs(row.createTime).format('YYYY-MM-DD HH:mm') : '-' }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="120" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
+            <el-button size="small" type="warning" @click.stop="onResetAkSk(row)">重置密钥</el-button>
             <el-button size="small" type="danger" @click.stop="onDelete(row)"><el-icon><Delete /></el-icon>删除</el-button>
           </template>
         </el-table-column>

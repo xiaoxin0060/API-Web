@@ -23,8 +23,15 @@
   </button>
 </template>
 
-<script setup>
-withDefaults(defineProps(), {
+<script setup lang="ts">
+interface Props {
+  type?: 'primary' | 'secondary' | 'success' | 'warning' | 'destructive' | 'info'
+  size?: 'small' | 'medium' | 'large'
+  disabled?: boolean
+  loading?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
   type: 'primary',
   size: 'medium',
   disabled: false,

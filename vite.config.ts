@@ -7,7 +7,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const isDev = command === 'serve' || mode === 'development'
-  const proxyTarget = env.VITE_PROXY_TARGET || 'http://localhost:8101'
+  const proxyTarget = env.VITE_PROXY_TARGET || 'http://localhost:8082'
   
   return {
     plugins: [
@@ -30,13 +30,13 @@ export default defineConfig(({ command, mode }) => {
           rewrite: (path) => path,
           configure: (proxy, _options) => {
             proxy.on('error', (err, _req, _res) => {
-              console.log('proxy error', err);
+              console.log('🔴 代理错误:', err.message);
             });
             proxy.on('proxyReq', (proxyReq, req, _res) => {
-              console.log('Sending Request to the Target:', req.method, req.url);
+              console.log(`🚀 代理请求: ${req.method} ${req.url} -> ${proxyTarget}${req.url}`);
             });
             proxy.on('proxyRes', (proxyRes, req, _res) => {
-              console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+              console.log(`📥 代理响应: ${proxyRes.statusCode} ${req.url}`);
             });
           },
         },

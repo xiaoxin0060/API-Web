@@ -8,31 +8,49 @@ const auth = useAuthStore()
 
 const isAdmin = computed(() => auth.user?.userRole === 'admin')
 
-const menuItems = computed(() => [
-  {
+const menuItems = computed(() => {
+  const items = []
+  
+  // 接口文档
+  items.push({
     index: '/interfaces',
-    title: '接口文档',
+    title: '接口文档', 
     icon: 'M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z'
-  },
-  {
-    index: '/posts',
-    title: '社区帖子',
-    icon: 'M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2ZM13,17H11V15H13V17ZM13,13H11V7H13V13Z'
-  },
-  {
+  })
+  
+  // 仅在特性开关启用时显示帖子模块
+  if (auth.canAccessPosts) {
+    items.push({
+      index: '/posts',
+      title: '社区帖子',
+      icon: 'M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2ZM13,17H11V15H13V17ZM13,13H11V7H13V13Z'
+    })
+  }
+  
+  // 个人中心
+  items.push({
     index: '/profile',
     title: '个人中心',
     icon: 'M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2ZM7.07,18.28C7.5,17.38 10.12,16.5 12,16.5C13.88,16.5 16.5,17.38 16.93,18.28C15.57,19.36 13.86,20 12,20C10.14,20 8.43,19.36 7.07,18.28ZM18.36,16.83C16.93,15.09 13.46,14.5 12,14.5C10.54,14.5 7.07,15.09 5.64,16.83C4.62,15.5 4,13.82 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,13.82 19.38,15.5 18.36,16.83ZM12,6C10.06,6 8.5,7.56 8.5,9.5C8.5,11.44 10.06,13 12,13C13.94,13 15.5,11.44 15.5,9.5C15.5,7.56 13.94,6 12,6Z'
-  }
-])
+  })
+  
+  return items
+})
 
-const adminItems = computed(() => isAdmin.value ? [
-  {
-    index: '/admin/users',
-    title: '用户管理',
-    icon: 'M16,4C18.21,4 20,5.79 20,8C20,10.21 18.21,12 16,12C13.79,12 12,10.21 12,8C12,5.79 13.79,4 16,4ZM16,14C20.42,14 24,15.79 24,18V20H8V18C8,15.79 11.58,14 16,14Z'
+const adminItems = computed(() => {
+  const items = []
+  
+  // 用户管理菜单 - 仅管理员可见
+  if (auth.canManageUsers) {
+    items.push({
+      index: '/admin/users',
+      title: '用户管理',
+      icon: 'M16,4C18.21,4 20,5.79 20,8C20,10.21 18.21,12 16,12C13.79,12 12,10.21 12,8C12,5.79 13.79,4 16,4ZM16,14C20.42,14 24,15.79 24,18V20H8V18C8,15.79 11.58,14 16,14Z'
+    })
   }
-] : [])
+  
+  return items
+})
 </script>
 
 <template>
@@ -55,7 +73,7 @@ const adminItems = computed(() => isAdmin.value ? [
       </router-link>
 
       <!-- 管理员菜单分组 -->
-      <div v-if="isAdmin" class="menu-group">
+      <div v-if="adminItems.length > 0" class="menu-group">
         <div class="menu-group__title">
           <div class="menu-group__icon">
             <svg viewBox="0 0 24 24" width="16" height="16">

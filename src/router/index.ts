@@ -231,6 +231,13 @@ router.beforeEach(async (to, _from, next) => {
     }
   }
   
+  // 检查帖子模块特性开关
+  if (to.path.startsWith('/posts') && !auth.FEATURE_FLAGS.enablePosts) {
+    NProgress.done()
+    app.setLoading(false)
+    return next('/403')
+  }
+  
   // 已登录用户访问登录/注册，按 redirect 回跳或首页
   if (auth.isLoggedIn && (to.path === '/login' || to.path === '/register')) {
     NProgress.done()
