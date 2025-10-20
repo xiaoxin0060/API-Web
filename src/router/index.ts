@@ -1,9 +1,32 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import NProgress from 'nprogress'
-import i18n from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
+
+// 简单的标题翻译函数
+const getTitle = (key: string): string => {
+  const titleMap: Record<string, string> = {
+    'auth.login': '用户登录',
+    'auth.register': '用户注册', 
+    'nav.interfaces': '接口文档',
+    'nav.posts': '社区帖子',
+    'nav.admin': '管理后台',
+    'nav.home': '首页',
+    'interface.add': '新建接口',
+    'interface.detail': '接口详情',
+    'interface.edit': '编辑接口',
+    'post.add': '发布帖子',
+    'post.detail': '帖子详情',
+    'post.edit': '编辑帖子',
+    'user.profile': '个人中心',
+    'admin.userManage': '用户管理',
+    'error.forbidden': '访问禁止',
+    'error.serverError': '服务器错误',
+    'page.notFound': '页面未找到'
+  }
+  return titleMap[key] || key
+}
 
 // 路由元信息类型定义
 declare module 'vue-router' {
@@ -42,15 +65,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/Register.vue'),
     meta: {
       title: 'auth.register',
-      hidden: true
-    }
-  },
-  {
-    path: '/welcome',
-    name: 'welcome-splash',
-    component: () => import('@/views/WelcomeSplash.vue'),
-    meta: {
-      title: '欢迎动画演示',
       hidden: true
     }
   },
@@ -214,21 +228,20 @@ const router = createRouter({
 })
 
 // 全局前置守卫
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach((to, _from, next) => {
   const auth = useAuthStore()
   const app = useAppStore()
   
-  // 开始加载进度条（响应时间 ≤ 100ms 要求）
+  // 开始加载进度条
   NProgress.start()
   app.setLoading(true, '页面加载中...')
   
-  // 首次加载时恢复登录状态
-  if (!auth.user && !auth.loading) {
-    try {
-      await auth.hydrate()
-    } catch (error) {
-      console.warn('Failed to restore auth state:', error)
-    }
+  // 公开页面 - 立即通过，无任何延迟
+  const publicPages = ['/login', '/register', '/403', '/500']
+  const isPublicPage = publicPages.includes(to.path) || to.name === 'not-found'
+  
+  if (isPublicPage) {
+    return next()
   }
   
   // 检查帖子模块特性开关
@@ -238,54 +251,48 @@ router.beforeEach(async (to, _from, next) => {
     return next('/403')
   }
   
-  // 已登录用户访问登录/注册，按 redirect 回跳或首页
+  // 需要登录的页面 - 直接检查当前状态，不执行异步操作
+  if (to.meta.requiresAuth) {
+    // 如果没有用户信息，直接跳转登录页
+    if (!auth.user || !auth.isLoggedIn) {
+      NProgress.done()
+      app.setLoading(false)
+      
+      const redirectPath = to.fullPath
+      return next({
+        path: '/login',
+        query: { redirect: redirectPath }
+      })
+    }
+    
+    // 已登录用户权限检查
+    if (to.meta.requiresAdmin && !auth.isAdmin) {
+      NProgress.done()
+      app.setLoading(false)
+      return next('/403')
+    }
+    
+    // 角色权限检查
+    if (to.meta.roles && to.meta.roles.length > 0) {
+      const hasPermission = to.meta.roles.some(role => {
+        const currentRole = auth.user?.userRole
+        return typeof currentRole === 'string' && currentRole.trim() === role
+      })
+      
+      if (!hasPermission) {
+        NProgress.done()
+        app.setLoading(false)
+        return next('/403')
+      }
+    }
+  }
+  
+  // 已登录用户访问登录/注册页，重定向到首页
   if (auth.isLoggedIn && (to.path === '/login' || to.path === '/register')) {
     NProgress.done()
     app.setLoading(false)
     const redirect = typeof to.query.redirect === 'string' ? to.query.redirect : ''
     return next(redirect || '/interfaces')
-  }
-  
-  // 公开页面检查
-  const publicPages = ['/login', '/register', '/welcome', '/403', '/500']
-  const isPublicPage = publicPages.includes(to.path) || to.name === 'not-found'
-  
-  if (isPublicPage) {
-    return next()
-  }
-  
-  // 需要登录的页面
-  if (to.meta.requiresAuth && !auth.isLoggedIn) {
-    NProgress.done()
-    app.setLoading(false)
-    
-    // 验收标准：401统一跳转登录并在成功后回跳原路径
-    const redirectPath = to.fullPath
-    return next({
-      path: '/login',
-      query: { redirect: redirectPath }
-    })
-  }
-  
-  // 需要管理员权限的页面
-  if (to.meta.requiresAdmin && !auth.isAdmin) {
-    NProgress.done()
-    app.setLoading(false)
-    return next('/403')
-  }
-  
-  // 角色权限检查
-  if (to.meta.roles && to.meta.roles.length > 0) {
-    const hasPermission = to.meta.roles.some(role => {
-      const currentRole = auth.user?.userRole
-      return typeof currentRole === 'string' && currentRole.trim() === role
-    })
-    
-    if (!hasPermission) {
-      NProgress.done()
-      app.setLoading(false)
-      return next('/403')
-    }
   }
   
   return next()
@@ -301,8 +308,7 @@ router.afterEach((to, _from, failure) => {
   
   // 设置页面标题
   if (to.meta?.title) {
-    const t = i18n.global?.t ? i18n.global.t : (k: string) => k
-    const titleText = t(to.meta.title as string)
+    const titleText = getTitle(to.meta.title as string)
     document.title = `${titleText} - ${app.config.title}`
   } else {
     document.title = app.config.title

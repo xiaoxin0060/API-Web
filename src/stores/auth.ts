@@ -36,32 +36,29 @@ export const useAuthStore = defineStore('auth', () => {
   }
   
   // 恢复登录状态
-  const hydrate = async (): Promise<void> => {
-    loading.value = true
+  const hydrate = async (silent = false): Promise<void> => {
+    if (!silent) {
+      loading.value = true
+    }
     error.value = null
     
     try {
-      console.log('[AUTH] 开始hydrate，调用getLoginUser API...')
       const resp = await getLoginUser()
-      console.log('[AUTH] getLoginUser响应:', resp)
       
       if (resp?.code === 0) {
         user.value = resp.data
-        console.log('[AUTH] 用户信息加载成功:', resp.data)
-        console.log('[AUTH] user.value 更新后:', user.value)
-        console.log('[AUTH] 用户角色:', resp.data?.userRole)
       } else {
         user.value = null
-        console.warn('[AUTH] getLoginUser失败，返回码:', resp?.code, '消息:', resp?.message)
+        console.warn('Failed to get login user:', resp?.code, resp?.message)
       }
     } catch (e: any) {
       user.value = null
-      console.error('[AUTH] hydrate异常:', e)
-      console.error('[AUTH] API错误详情:', e?.response?.data)
       // 不在hydrate时显示错误，静默失败
       console.warn('Failed to restore auth state:', e)
     } finally {
-      loading.value = false
+      if (!silent) {
+        loading.value = false
+      }
     }
   }
   

@@ -3,7 +3,6 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import dayjs from 'dayjs'
 import { getPost } from '@/api/posts'
-import WelcomeAnimation from '@/components/Welcome/WelcomeAnimation.vue'
 
 const route = useRoute()
 const id = ref(Number(route.params.id))
@@ -47,7 +46,10 @@ onMounted(() => {
 
 <template>
   <div class="post-detail-container">
-    <WelcomeAnimation v-if="loading" type="loading" message="正在加载帖子详情" subtitle="精彩内容即将呈现" />
+    <div v-if="loading" class="loading-state">
+      <el-skeleton :rows="8" animated />
+      <p class="loading-text">正在加载帖子详情，精彩内容即将呈现...</p>
+    </div>
     <p v-if="error" class="error-message anim-fade-in-up">{{ error }}</p>
     
     <div v-if="post" class="card anim-fade-in-up">

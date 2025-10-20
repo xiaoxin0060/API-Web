@@ -66,8 +66,6 @@ const displayList = computed(() => {
 
 function syncFromRoute() {
   const q = route.query
-  console.debug('[SYNC] 同步路由参数:', q)
-  console.debug('[SYNC] 当前用户权限:', isAdmin.value)
   
   query.value.current = Number(q.current || 1)
   query.value.pageSize = Number(q.pageSize || 10)
@@ -89,19 +87,15 @@ function syncFromRoute() {
     } else if (raw === '') {
       normalizedStatus = ''
     } else {
-      console.warn('[SYNC] 未知状态值:', raw, '将重置为空')
+      console.warn('Unknown status value, reset to empty:', raw)
       normalizedStatus = ''
     }
     
     query.value.status = normalizedStatus
-    console.debug('[SYNC] 管理员模式，状态设置为:', query.value.status)
   } else {
     // 普通用户不显示状态筛选，query中保持空
     query.value.status = ''
-    console.debug('[SYNC] 普通用户模式，状态清空')
   }
-  
-  console.debug('[SYNC] 最终query:', query.value)
 }
 
 function pushToRoute() {
@@ -122,54 +116,33 @@ async function fetchData() {
     
     // 根据用户权限设置状态过滤
     const currentIsAdmin = isAdmin.value
-    console.debug('[STATUS] 当前权限:', {
-      权限状态: currentIsAdmin,
-      查询状态: query.value.status,
-      查询状态类型: typeof query.value.status
-    })
     
     if (!currentIsAdmin) {
       // 普通用户强制仅显示已上线接口
       params.status = 1
-      console.debug('[STATUS] 普通用户模式，强制status=1')
     } else {
       // 管理员状态筛选逻辑
       const statusFilter = query.value.status
       if (statusFilter === 'ONLINE') {
         params.status = 1
-        console.debug('[STATUS] 管理员选择在线，status=1')
       } else if (statusFilter === 'OFFLINE') {
         params.status = 0
-        console.debug('[STATUS] 管理员选择下线，status=0')
       } else if (statusFilter === '' || statusFilter === null || statusFilter === undefined) {
         // 明确不传status参数，显示全部状态
-        console.debug('[STATUS] 管理员未选择状态，显示全部（不传status参数）')
       } else {
         // 处理其他意外值
-        console.warn('[STATUS] 意外的状态值:', statusFilter, '显示全部')
+        console.warn('Unexpected status value, showing all:', statusFilter)
       }
     }
     
-    // 调试信息（开发环境）
-    if (import.meta.env.DEV) {
-      console.debug('[interfaces] query:', query.value)
-      console.debug('[interfaces] params:', params)
-      console.debug('[interfaces] isAdmin:', isAdmin.value)
-    }
-    
     const resp = await pageInterfaces(params)
-    console.debug('[API] 响应结果:', resp)
     
     if (resp?.code === 0) {
       const records = resp.data.records || []
       list.value = records
       total.value = resp.data.total || 0
-      console.debug('[API] 加载成功，条数:', records.length, '总数:', total.value)
-      if (records.length > 0) {
-        console.debug('[API] 第一条数据示例:', records[0])
-      }
     } else {
-      console.error('[API] 加载失败:', resp)
+      console.error('Failed to load interfaces:', resp)
       ElMessage.error(resp?.message || '加载失败')
     }
   } catch (e) {
@@ -181,15 +154,12 @@ async function fetchData() {
 }
 
 function handleSearch() {
-  console.debug('[SEARCH] 执行搜索')
   query.value.current = 1
   // 只推送路由，让路由监听触发fetchData避免重复请求
   pushToRoute()
 }
 
 function handleReset() {
-  console.debug('[RESET] 重置筛选条件')
-  
   // 重置所有筛选条件
   query.value = {
     current: 1, 
@@ -201,8 +171,6 @@ function handleReset() {
     sortField: '',
     sortOrder: ''
   }
-  
-  console.debug('[RESET] 重置后的query:', query.value)
   
   // 只推送路由，让路由监听触发fetchData避免重复请求
   pushToRoute()
@@ -322,59 +290,26 @@ function handleActionCommand(row, command) {
 }
 
 onMounted(async () => { 
-  console.log('[INIT] 开始初始化，auth对象:', auth)
-  console.log('[INIT] authUser ref:', authUser)
-  console.log('[INIT] 当前用户:', authUser.value)
-  console.log('[INIT] 权限状态详情:', { 
-    isAdmin: isAdmin.value, 
-    loading: authLoading.value,
-    userRole: authUser.value?.userRole 
-  })
-  
   // 确保用户信息已加载
   if (!authUser.value && !authLoading.value) {
-    console.log('[INIT] 重新加载用户信息...')
     try {
-      await auth.hydrate()
-      console.log('[INIT] hydrate完成')
-      console.log('[INIT] authUser ref:', authUser)
-      console.log('[INIT] authUser.value:', authUser.value)
-      console.log('[INIT] 用户信息:', authUser.value)
-      console.log('[INIT] 用户角色:', authUser.value?.userRole)
-      console.log('[INIT] isAdmin computed:', isAdmin.value)
-      
+      // 使用静默模式，避免显示全局加载状态
+      await auth.hydrate(true)
       // 强制触发响应式更新检查
       await nextTick()
-      console.log('[INIT] nextTick后 authUser.value:', authUser.value)
     } catch (e) {
-      console.error('[INIT] hydrate失败:', e)
+      console.error('Failed to load user info:', e)
     }
   }
   
-  // 检查是否已登录
-  if (!authUser.value) {
-    console.warn('[INIT] 用户未登录，跳转到登录页面')
-    // 可以选择跳转到登录页面
-    // router.push('/login')
-    // return
-  }
-  
-  console.log('[INIT] 最终权限状态:', { isAdmin: isAdmin.value })
   syncFromRoute(); 
   fetchData() 
 })
 
 // 监听用户状态变化
 watch(authUser, (newUser, oldUser) => {
-  console.log('[WATCH] 用户状态变化:', {
-    旧用户: oldUser,
-    新用户: newUser,
-    是否管理员: isAdmin.value
-  })
-  
   // 如果用户状态发生变化，重新获取数据
   if (newUser !== oldUser && oldUser !== undefined) {
-    console.log('[WATCH] 用户状态改变，重新获取数据')
     fetchData()
   }
 })
@@ -390,7 +325,6 @@ watch(() => route.query, () => {
 
 function handleFilterChange() {
   if (syncingFromRoute.value) return
-  console.debug('[FILTER] 筛选条件变化:', query.value)
   query.value.current = 1
   // 只推送路由，让路由监听触发fetchData避免重复请求
   pushToRoute()
@@ -398,18 +332,11 @@ function handleFilterChange() {
 
 // 专门处理状态筛选的函数
 function handleStatusFilterChange(newStatus) {
-  console.debug('[STATUS_FILTER] 状态筛选变化:', {
-    新状态: newStatus,
-    旧状态: query.value.status
-  })
-  
   // 防止路由同步时的重复触发
   if (syncingFromRoute.value) return
   
   query.value.status = newStatus || ''
   query.value.current = 1
-  
-  console.debug('[STATUS_FILTER] 更新后的query:', query.value)
   
   // 只推送路由，让路由监听触发fetchData避免重复请求
   pushToRoute()
@@ -805,5 +732,6 @@ function handleStatusFilterChange(newStatus) {
 }
 
 </style>
+
 
 

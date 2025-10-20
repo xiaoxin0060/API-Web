@@ -168,11 +168,7 @@ const submitPermissionRequest = async () => {
 // 页面加载时记录访问日志
 onMounted(() => {
   // 验收标准：记录无权限访问日志
-  console.log('403 Access denied:', {
-    user: auth.user?.userAccount,
-    path: router.currentRoute.value.fullPath,
-    timestamp: new Date().toISOString()
-  })
+  // 403 Access denied - log access attempt
 })
 </script>
 

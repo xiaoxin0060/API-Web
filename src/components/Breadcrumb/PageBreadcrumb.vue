@@ -24,7 +24,7 @@
           <el-icon v-if="item.icon && index > 0" class="breadcrumb-icon">
             <component :is="item.icon" />
           </el-icon>
-          {{ $t(item.title) }}
+          {{ getTitle(item.title) }}
         </router-link>
         
         <!-- 当前页面（不可点击） -->
@@ -32,7 +32,7 @@
           <el-icon v-if="item.icon && index > 0" class="breadcrumb-icon">
             <component :is="item.icon" />
           </el-icon>
-          {{ $t(item.title) }}
+          {{ getTitle(item.title) }}
         </span>
       </el-breadcrumb-item>
     </el-breadcrumb>
@@ -60,6 +60,24 @@ const route = useRoute()
 
 // 控制面包屑淡入动画
 const isLoaded = ref(false)
+
+// 简单的标题翻译函数
+const getTitle = (key: string): string => {
+  const titleMap: Record<string, string> = {
+    'nav.home': '首页',
+    'nav.interfaces': '接口文档',
+    'nav.posts': '社区帖子',
+    'interface.add': '新建接口',
+    'interface.detail': '接口详情',
+    'interface.edit': '编辑接口',
+    'post.add': '发布帖子',
+    'post.detail': '帖子详情',
+    'post.edit': '编辑帖子',
+    'user.profile': '个人中心',
+    'admin.userManage': '用户管理'
+  }
+  return titleMap[key] || key
+}
 
 // 生成面包屑导航
 const breadcrumbList = computed<BreadcrumbItem[]>(() => {

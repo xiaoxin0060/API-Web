@@ -3,7 +3,6 @@ import { onMounted, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { getMaskedAkSk, resetAkSk, updateProfile } from '@/api/auth'
 import { pageUserInterfaceInfo } from '@/api/userInterfaceInfo'
-import WelcomeAnimation from '@/components/Welcome/WelcomeAnimation.vue'
 import dayjs from 'dayjs'
 
 const auth = useAuthStore()
@@ -71,7 +70,8 @@ function triggerSuccessAnimation() {
 
 onMounted(() => {
   if (!auth.user) {
-    auth.hydrate().then(loadMasked)
+    // 非静默模式，显示加载状态
+    auth.hydrate(false).then(loadMasked)
   } else {
     loadMasked()
   }
@@ -146,7 +146,10 @@ async function saveProfile() {
       <template #header>
         <div class="card-header"><h2>我的资料</h2></div>
       </template>
-      <WelcomeAnimation v-if="auth.loading" type="loading" message="正在加载您的资料" subtitle="请稍候片刻" />
+      <div v-if="auth.loading" class="loading-state">
+        <el-skeleton :rows="5" animated />
+        <p class="loading-text">正在加载您的资料，请稍候片刻...</p>
+      </div>
       <div v-else-if="!auth.user">
         <p>未登录，请先 <router-link to="/login">登录</router-link></p>
       </div>

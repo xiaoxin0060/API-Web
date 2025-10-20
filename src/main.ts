@@ -10,8 +10,6 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 import App from './App.vue'
 import router from '@/router'
-import i18n from '@/i18n'
-import { performanceDetector } from '@/utils/performanceDetector'
 
 // ✅ 正确引入中文语言包
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
@@ -44,9 +42,8 @@ const vueQueryOptions = {
 app.use(pinia)
 app.use(VueQueryPlugin, vueQueryOptions)
 app.use(router)
-app.use(i18n)
 app.use(ElementPlus, {
-  locale: zhCn, // ✅ 必须设置 locale，否则会报 $l 错误
+  locale: zhCn, // 
 })
 
 // 注册所有 Element Plus 图标
@@ -59,16 +56,16 @@ app.config.errorHandler = (err, _vm, info) => {
   console.error('Global error:', err, info)
 }
 
-// 性能监控
-if (import.meta.env.DEV) {
-  app.config.performance = true
-}
-
 // 全局属性（向后兼容）
 app.config.globalProperties.$ELEMENT = { size: 'default' }
 
 // 挂载应用
 app.mount('#app')
 
-// 初始化性能检测器
-performanceDetector
+// 应用启动后静默尝试恢复登录状态
+import { useAuthStore } from '@/stores/auth'
+const auth = useAuthStore()
+// 静默尝试恢复登录状态，不显示加载状态，不阻塞应用启动
+auth.hydrate(true).catch(() => {
+  // 静默处理失败，不影响应用正常使用
+})

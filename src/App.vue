@@ -1,16 +1,11 @@
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import WelcomeAnimation from '@/components/Welcome/WelcomeAnimation.vue'
 import Header from '@/components/Header.vue'
 import SidebarNav from '@/components/Layout/SidebarNav.vue'
 import Button from '@/components/Button.vue'
 import PageBreadcrumb from '@/components/Breadcrumb/PageBreadcrumb.vue'
-import AnimationDemo from '@/components/AnimationDemo.vue'
-
-// 开发模式检测
-const isDev = import.meta.env.DEV
 
 const router = useRouter()
 const route = useRoute()
@@ -19,28 +14,7 @@ const auth = useAuthStore()
 const isAuthPage = computed(() => ['/login', '/register'].includes(route.path))
 const isAdmin = computed(() => auth.isAdmin)
 
-// 控制欢迎动画显示 - 初始化时检查是否需要显示
-const showWelcome = ref(false)
-
-// 初始化欢迎动画状态
-const initWelcomeState = () => {
-  const hasVisited = localStorage.getItem('appColdStart')
-  if (!hasVisited) {
-    showWelcome.value = true
-  }
-}
-
-// 处理欢迎动画完成
-function handleWelcomeComplete() {
-  showWelcome.value = false
-}
-
-// 处理互动完成
-function handleInteractiveComplete() {
-  console.log('用户完成互动体验')
-}
-
-// 通知徽章状态 (演示badge-updated动画)
+// 通知徽章状态
 const notificationCount = ref(3)
 const badgeAnimating = ref(false)
 
@@ -92,21 +66,9 @@ const navItems = computed(() => {
   return items
 })
 
-// 组件挂载时初始化欢迎动画状态
-onMounted(() => {
-  initWelcomeState()
-})
 </script>
 
 <template>
-  <!-- 开场动画 -->
-  <WelcomeAnimation 
-    v-if="showWelcome"
-    :show-first-visit="true"
-    storage-key="appColdStart"
-    @complete="handleWelcomeComplete"
-    @interactive-complete="handleInteractiveComplete"
-  />
   
   <div class="app-container">
     <!-- 主应用布局 -->
@@ -206,9 +168,6 @@ onMounted(() => {
     <div v-else class="auth-container">
       <router-view />
     </div>
-    
-    <!-- 动画演示控制面板 (在开发模式下显示) -->
-    <AnimationDemo v-if="isDev" />
   </div>
 </template>
 

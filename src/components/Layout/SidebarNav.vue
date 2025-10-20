@@ -3,13 +3,20 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
+// 定义菜单项类型
+interface MenuItem {
+  index: string
+  title: string
+  icon: string
+}
+
 const route = useRoute()
 const auth = useAuthStore()
 
 const isAdmin = computed(() => auth.user?.userRole === 'admin')
 
 const menuItems = computed(() => {
-  const items = []
+  const items: MenuItem[] = []
   
   // 接口文档
   items.push({
@@ -38,7 +45,7 @@ const menuItems = computed(() => {
 })
 
 const adminItems = computed(() => {
-  const items = []
+  const items: MenuItem[] = []
   
   // 用户管理菜单 - 仅管理员可见
   if (auth.canManageUsers) {

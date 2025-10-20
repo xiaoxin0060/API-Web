@@ -8,6 +8,9 @@ const auth = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 
+// 独立的登录加载状态，不依赖 auth.loading
+const loginLoading = ref(false)
+
 const loginForm = reactive({
   userAccount: '',
   userPassword: ''
@@ -46,13 +49,14 @@ function normalizeRedirect(raw) {
 async function onSubmit() {
   try {
     await formRef.value.validate()
+    loginLoading.value = true
+    
     const ok = await auth.login(loginForm.userAccount, loginForm.userPassword)
     if (ok) {
       ElMessage.success('登录成功')
       
       // 检查是否有重定向参数，如果有则跳转到原页面
       const redirect = normalizeRedirect(route.query.redirect)
-      await auth.hydrate().catch(() => {})
       await router.replace(redirect || '/interfaces')
     } else {
       ElMessage.error(auth.error || '登录失败')
@@ -61,6 +65,8 @@ async function onSubmit() {
   } catch (error) {
     // 表单验证失败
     triggerErrorShake()
+  } finally {
+    loginLoading.value = false
   }
 }
 
@@ -168,10 +174,10 @@ onMounted(() => {
               type="primary" 
               size="large" 
               style="width: 100%"
-              :loading="auth.loading"
+              :loading="loginLoading"
               @click="onSubmit"
             >
-              {{ auth.loading ? '正在登录...' : '登录' }}
+              {{ loginLoading ? '正在登录...' : '登录' }}
             </el-button>
           </el-form-item>
         </el-form>
