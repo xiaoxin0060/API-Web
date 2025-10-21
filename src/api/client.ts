@@ -10,7 +10,7 @@ function generateRequestId(): string {
 // 创建API客户端实例
 const apiClient: AxiosInstance = axios.create({
   baseURL: (import.meta as any).env?.VITE_API_BASE_URL || '/api',
-  withCredentials: true,
+  withCredentials: true, // Session/Cookie认证必须保持true
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
